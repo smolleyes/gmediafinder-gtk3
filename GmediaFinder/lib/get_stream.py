@@ -116,7 +116,7 @@ class Browser():
 	"on_search_btn_clicked" : self.on_active,
 	"on_home_btn_clicked" : self.go_home,
 	}
-	self.mainGui.gladeGui.signal_autoconnect(dic)
+	self.mainGui.gladeGui.connect_signals(dic)
 	
     def on_console_message(self, *args):
         """ callback on 'console-message' WebKit.WebView signal """

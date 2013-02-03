@@ -2,8 +2,8 @@
 #-*- coding: UTF-8 -*-
 
 import gi
-from gi.repository import Gtk,Gdk,GObject,Pango,PangoCairo,cairo,GLib
-from gi.repository import GdkPixbuf 
+gi.require_version('GObject', '2.0')
+from gi.repository import Gtk,Gdk,GObject,Pango,PangoCairo,cairo,GLib,GdkPixbuf 
 import sys
 import os
 import thread
@@ -31,13 +31,13 @@ import lib.debrid as debrider
 from lib.downloads import downloader
 from lib.player.player_gui import Player
 from lib.config import *
-#from lib.engines.main import Engines
+from lib.engines.main import Engines
 from lib.functions import *
 from lib.playlist import Playlist
 #if sys.platform != "win32":
 	#from lib.pykey import send_string
 import lib.checklinks as checkLink
-from lib.get_stream import Browser as browser
+#from lib.get_stream import Browser as browser
 
 #except:
 #from GmediaFinder.lib.config import *

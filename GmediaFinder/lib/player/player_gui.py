@@ -3,8 +3,9 @@
 # gmediafinder's player gui package
 import gi
 gi.require_version('Gst', '1.0')
-from gi.repository import GObject, Gst, Gtk, Gdk, GdkX11, GstVideo, Pango,GdkPixbuf
-# Needed for window.get_xid(), xvimagesink.set_window_handle(), respectively:
+gi.require_version('GObject', '2.0')
+from gi.repository import GObject, Gst, Gtk, Gdk, Pango,GdkPixbuf
+
 import sys
 import math
 from glib import markup_escape_text
@@ -26,12 +27,14 @@ except:
     from GmediaFinder.lib.pykey import send_string
     from GmediaFinder.lib.player.player_engine import *
     
-GST_STATE_VOID_PENDING        = 0
-GST_STATE_NULL                = 1
-GST_STATE_READY               = 2
-GST_STATE_PAUSED              = 3
-GST_STATE_PLAYING             = 4
+Gst_STATE_VOID_PENDING        = 0
+Gst_STATE_NULL                = 1
+Gst_STATE_READY               = 2
+Gst_STATE_PAUSED              = 3
+Gst_STATE_PLAYING             = 4
 
+GObject.threads_init()
+Gst.init(None)
 
 class Player(GObject.GObject):
     UPDATE_INTERVAL = 500
@@ -121,7 +124,7 @@ class Player(GObject.GObject):
         self.gladeGui.connect_signals(dic)
         #### load buttons and pixbufs
         self.load_gui_icons()
-        #### init gst gplayer engine
+        #### init Gst gplayer engine
         self.player = GstPlayer(mainGui,self)
 	self.radio_mode = False
 	self.media_codec = None
@@ -152,15 +155,15 @@ class Player(GObject.GObject):
         self.changed_id = -1
         self.seek_timeout_id = -1
 
-        self.p_position = gst.CLOCK_TIME_NONE
-        self.p_duration = gst.CLOCK_TIME_NONE
+        self.p_position = Gst.CLOCK_TIME_NONE
+        self.p_duration = Gst.CLOCK_TIME_NONE
 	
 	self.player.connect("fill-status-changed", self._fill_status_changed)
 	self.player.connect('finished', self.on_finished)
 	
     @property
     def state(self):
-	return self.player.get_state()
+		return self.player.get_state()
     
     def load_gui_icons(self):
         ## try to load and use the current gtk icon theme,
@@ -266,7 +269,7 @@ class Player(GObject.GObject):
     
     def play_toggled(self,widget=None,url=None):
 	if widget:
-	    if self.player.get_state() != GST_STATE_READY and self.player.get_state() != GST_STATE_NULL:
+	    if self.player.get_state() != Gst_STATE_READY and self.player.get_state() != Gst_STATE_NULL:
 		self.stop()
 		return
 	    else:
@@ -275,12 +278,12 @@ class Player(GObject.GObject):
 		except:
 		    return
 	else:
-	    if self.player.get_state() != GST_STATE_READY and self.player.get_state() != GST_STATE_NULL:
+	    if self.player.get_state() != Gst_STATE_READY and self.player.get_state() != Gst_STATE_NULL:
 		self.stop()
 	    self.start_play(url)
     
     def stop(self,widget=None):
-		if self.player.get_state() == GST_STATE_READY:
+		if self.player.get_state() == Gst_STATE_READY:
 			return
 		self.play_thread_id = None
 		self.radio_mode = False
@@ -302,7 +305,7 @@ class Player(GObject.GObject):
     
 
     def pause_resume(self,widget=None):
-        if self.player.get_state() == GST_STATE_PLAYING:
+        if self.player.get_state() == Gst_STATE_PLAYING:
 	    self.player.pause()
             GObject.idle_add(self.pause_btn_pb.set_from_pixbuf,self.play_icon)
         else:
@@ -338,7 +341,7 @@ class Player(GObject.GObject):
 	    pass
     
     def on_expose_event(self, widget, event):
-        if self.player.get_state() == GST_STATE_PLAYING and self.mainGui.search_engine.engine_type == 'video':
+        if self.player.get_state() == Gst_STATE_PLAYING and self.mainGui.search_engine.engine_type == 'video':
             pass
         x , y, self.area_width, self.area_height = event.area
         GObject.idle_add(widget.window.draw_drawable,widget.get_style().fg_gc[Gtk.StateType.NORMAL],
@@ -350,12 +353,13 @@ class Player(GObject.GObject):
                 pass
         #return False
     
-    def on_configure_event(self, widget, event):         
-		global pixmap
-		x, y, width, height = widget.get_allocation()
-		pixmap = Gdk.Pixmap(widget.window, width, height)
-		GObject.idle_add(pixmap.draw_rectangle,widget.get_style().black_gc,
-								True, 0, 0, width, height)
+    def on_configure_event(self, widget, event):
+		pass        
+		#global pixmap
+		#x, y, width, height = widget.get_allocation()
+		#pixmap = Gdk.Pixmap(widget.window, width, height)
+		#GObject.idle_add(pixmap.draw_rectangle,widget.get_style().black_gc,
+								#True, 0, 0, width, height)
 		
 		#return True
     
@@ -534,7 +538,7 @@ class Player(GObject.GObject):
             if not self.vis_selector.getSelectedIndex() == 0 and self.mainGui.search_engine.engine_type != "video":
 		self.player.player.set_property('flags', 0x00000008|0x00000002)
 		self.vis = self.change_visualisation()
-                self.visual = gst.element_factory_make(self.vis,'visual')
+                self.visual = Gst.element_factory_make(self.vis,'visual')
                 self.player.player.set_property('vis-plugin', self.visual)
 	    else:
 		self.player.player.set_property('flags', 0x00000001|0x00000002|0x80)
@@ -574,10 +578,10 @@ class Player(GObject.GObject):
         """
 	#print "---------------update_info-----------------"
 	#print "state : %s" % self.state
-	if self.player.get_state() != GST_STATE_PLAYING:
+	if self.player.get_state() != Gst_STATE_PLAYING:
 	    return
 	    
-        if self.player.get_state() == GST_STATE_READY:
+        if self.player.get_state() == Gst_STATE_READY:
             adjustment = Gtk.Adjustment(0, 0.00, 100.0, 0.1, 1.0, 1.0)
             self.seeker.set_adjustment(adjustment)
             GObject.idle_add(self.time_label.set_text,"00:00 / 00:00")
@@ -628,12 +632,12 @@ class Player(GObject.GObject):
         else:
             real = value * self.p_duration / 100
         
-        seconds = real / gst.SECOND
+        seconds = real / Gst.SECOND
 	return "%02d:%02d" % (seconds / 60, seconds % 60)
 
     def scale_button_press_cb(self, widget, event):
         # see seek.c:start_seek
-        gst.debug('starting seek')
+        Gst.debug('starting seek')
         self.seekmove = True
         self.was_playing = self.player.is_playing()
         if self.was_playing:
@@ -652,10 +656,10 @@ class Player(GObject.GObject):
     def scale_value_changed_cb(self, scale):
         # see seek.c:seek_cb
         real = long(scale.get_value() * self.p_duration / 100) # in ns
-        gst.debug('value changed, perform seek to %r' % real)
+        Gst.debug('value changed, perform seek to %r' % real)
         self.player.seek(real)
         # allow for a preroll
-        self.player.get_state(timeout=50*gst.MSECOND,full=True) # 50 ms
+        self.player.get_state(timeout=50*Gst.MSECOND,full=True) # 50 ms
 
     def scale_button_release_cb(self, widget, event):
         # see seek.cstop_seek
@@ -666,7 +670,7 @@ class Player(GObject.GObject):
             GObject.source_remove(self.seek_timeout_id)
             self.seek_timeout_id = -1
         else:
-            gst.debug('released slider, setting back to playing')
+            Gst.debug('released slider, setting back to playing')
             if self.was_playing:
                 self.pause_resume()
 
@@ -678,7 +682,7 @@ class Player(GObject.GObject):
 
     def update_scale_cb(self):
         self.p_position, self.p_duration = self.player.query_position()
-        if self.p_position != gst.CLOCK_TIME_NONE:
+        if self.p_position != Gst.CLOCK_TIME_NONE:
             value = self.p_position * 100.0 / self.p_duration
             self.adjustment.set_value(value)
 	

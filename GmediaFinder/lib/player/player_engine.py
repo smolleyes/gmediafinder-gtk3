@@ -5,13 +5,9 @@
 import sys
 import os, math
 import gi
+gi.require_version('GObject', '2.0')
 gi.require_version('Gst', '1.0')
-from gi.repository import Gst, GstVideo
-from gi.repository import Gtk,Gdk
-# Needed for window.get_xid(), xvimagesink.set_window_handle(), respectively:
-from gi.repository import GdkX11
-from gi.repository import GObject
-
+from gi.repository import GObject,Gst,Gtk,Gdk
 
 Gst_STATE_VOID_PENDING        = 0
 Gst_STATE_NULL                = 1
@@ -20,6 +16,8 @@ Gst_STATE_PAUSED              = 3
 Gst_STATE_PLAYING             = 4
 Gst_STATE_BUFFERING           = 5
 
+GObject.threads_init()
+
 class GstPlayer(GObject.GObject):
     __gsignals__ = { 'fill-status-changed': (GObject.SignalFlags.RUN_FIRST,
                                              None,
@@ -27,7 +25,6 @@ class GstPlayer(GObject.GObject):
 
     def __init__(self, mainGui,playerGui):
 	GObject.GObject.__init__(self)
-	Gst.init(None)
 	self.mainGui = mainGui
 	self.playerGui = playerGui
         self.playing = False
@@ -283,6 +280,7 @@ class GstPlayer(GObject.GObject):
 
     def is_playing(self):
         return self.playing
+        
 
 GObject.type_register(GstPlayer)
 GObject.signal_new('finished',
