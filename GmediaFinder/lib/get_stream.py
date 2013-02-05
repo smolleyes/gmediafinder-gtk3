@@ -77,10 +77,10 @@ class Browser():
     def __init__(self, mainGui):
 	GObject.threads_init()
 	self.mainGui = mainGui
-	self.url_bar = self.mainGui.gladeGui.get_widget("browser_entry")
+	self.url_bar = self.mainGui.gladeGui.get_object("browser_entry")
 	self.url_bar.connect("activate", self.on_active)
-	self.back_button = self.mainGui.gladeGui.get_widget("back_btn")
-	self.forward_button = self.mainGui.gladeGui.get_widget("next_btn")
+	self.back_button = self.mainGui.gladeGui.get_object("back_btn")
+	self.forward_button = self.mainGui.gladeGui.get_object("next_btn")
 	self.view = WebView()
 	## get requested pages
 	self.view.connect('resource-request-starting', self.resource_cb)

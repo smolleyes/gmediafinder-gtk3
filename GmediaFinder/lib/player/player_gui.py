@@ -27,11 +27,11 @@ except:
     from GmediaFinder.lib.pykey import send_string
     from GmediaFinder.lib.player.player_engine import *
     
-Gst_STATE_VOID_PENDING        = 0
-Gst_STATE_NULL                = 1
-Gst_STATE_READY               = 2
-Gst_STATE_PAUSED              = 3
-Gst_STATE_PLAYING             = 4
+Gst.State.VOID_PENDING        = 0
+Gst.State.NULL                = 1
+Gst.State.READY               = 2
+Gst.State.PAUSED              = 3
+Gst.State.PLAYING             = 4
 
 GObject.threads_init()
 Gst.init(None)
@@ -269,7 +269,7 @@ class Player(GObject.GObject):
     
     def play_toggled(self,widget=None,url=None):
 	if widget:
-	    if self.player.get_state() != Gst_STATE_READY and self.player.get_state() != Gst_STATE_NULL:
+	    if self.player.get_state() != Gst.State.READY and self.player.get_state() != Gst.State.NULL:
 		self.stop()
 		return
 	    else:
@@ -278,12 +278,12 @@ class Player(GObject.GObject):
 		except:
 		    return
 	else:
-	    if self.player.get_state() != Gst_STATE_READY and self.player.get_state() != Gst_STATE_NULL:
+	    if self.player.get_state() != Gst.State.READY and self.player.get_state() != Gst.State.NULL:
 		self.stop()
 	    self.start_play(url)
     
     def stop(self,widget=None):
-		if self.player.get_state() == Gst_STATE_READY:
+		if self.player.get_state() == Gst.State.READY:
 			return
 		self.play_thread_id = None
 		self.radio_mode = False
@@ -305,7 +305,7 @@ class Player(GObject.GObject):
     
 
     def pause_resume(self,widget=None):
-        if self.player.get_state() == Gst_STATE_PLAYING:
+        if self.player.get_state() == Gst.State.PLAYING:
 	    self.player.pause()
             GObject.idle_add(self.pause_btn_pb.set_from_pixbuf,self.play_icon)
         else:
@@ -341,17 +341,17 @@ class Player(GObject.GObject):
 	    pass
     
     def on_expose_event(self, widget, event):
-        if self.player.get_state() == Gst_STATE_PLAYING and self.mainGui.search_engine.engine_type == 'video':
+        if self.player.get_state() == Gst.State.PLAYING and self.mainGui.search_engine.engine_type == 'video':
             pass
-        x , y, self.area_width, self.area_height = event.area
-        GObject.idle_add(widget.window.draw_drawable,widget.get_style().fg_gc[Gtk.StateType.NORMAL],
-                                      pixmap, x, y, x, y, self.area_width, self.area_height)
-	if self.mainGui.draw_text:
-            try:
-                self.mainGui.search_engine.print_media_infos()
-            except:
-                pass
-        #return False
+        #x , y, self.area_width, self.area_height = event.area
+        #GObject.idle_add(widget.window.draw_drawable,widget.get_style().fg_gc[Gtk.StateType.NORMAL],
+                                      #pixmap, x, y, x, y, self.area_width, self.area_height)
+	#if self.mainGui.draw_text:
+            #try:
+                #self.mainGui.search_engine.print_media_infos()
+            #except:
+                #pass
+        ##return False
     
     def on_configure_event(self, widget, event):
 		pass        
@@ -578,10 +578,10 @@ class Player(GObject.GObject):
         """
 	#print "---------------update_info-----------------"
 	#print "state : %s" % self.state
-	if self.player.get_state() != Gst_STATE_PLAYING:
+	if self.player.get_state() != Gst.State.PLAYING:
 	    return
 	    
-        if self.player.get_state() == Gst_STATE_READY:
+        if self.player.get_state() == Gst.State.READY:
             adjustment = Gtk.Adjustment(0, 0.00, 100.0, 0.1, 1.0, 1.0)
             self.seeker.set_adjustment(adjustment)
             GObject.idle_add(self.time_label.set_text,"00:00 / 00:00")

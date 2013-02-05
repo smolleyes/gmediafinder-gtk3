@@ -379,7 +379,7 @@ class GsongFinder(object):
             self.prepare_search()
         self.search_entry.grab_focus()
 
-    def alternate_color(self, column, cell, model, iter):
+    def alternate_color(self, column, cell, model, iter,truc):
         if int((model.get_string_from_iter(iter).split(":")[0])) % 2:
             cell.set_property('background-gdk', self.odd)
             cell.set_property('cell-background-gdk', self.odd)
@@ -393,9 +393,11 @@ class GsongFinder(object):
         self.x,self.y=self.window.get_position()
 
     def resize_wrap(self, scroll, allocation, treeview, column, cell):
+        value = GObject.Value()
+        value.init(GObject.TYPE_INT)
         otherColumns = (c for c in treeview.get_columns() if c != column)
-        newWidth = allocation.width - sum(c.get_width() for c in otherColumns)
-        newWidth -= treeview.style_get_property("horizontal-separator") * 4
+        newWidth = allocation.width - sum(c.get_width() for c in otherColumns) - 8
+        #newWidth -= treeview.style_get_property("horizontal-separator",value) * 4
         if cell.props.wrap_width == newWidth or newWidth <= 0:
                 return
         if newWidth < 250:
@@ -636,6 +638,7 @@ class GsongFinder(object):
         self.add_thread(self.search_engine,self.user_search,page)
 
     def add_sound(self, name, media_link, img=None, quality_list=None, plugname=None,markup_src=None, synop=None, select=False):
+        print name, media_link, img, quality_list, plugname,markup_src, synop
         orig_pixbuf = img
         if not img:
             img = GdkPixbuf.Pixbuf.new_from_file_at_scale(os.path.join(self.img_path,'video.png'), 64,64, 1)

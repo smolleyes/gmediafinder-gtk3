@@ -9,12 +9,12 @@ gi.require_version('GObject', '2.0')
 gi.require_version('Gst', '1.0')
 from gi.repository import GObject,Gst,Gtk,Gdk
 
-Gst_STATE_VOID_PENDING        = 0
-Gst_STATE_NULL                = 1
-Gst_STATE_READY               = 2
-Gst_STATE_PAUSED              = 3
-Gst_STATE_PLAYING             = 4
-Gst_STATE_BUFFERING           = 5
+Gst.State.VOID_PENDING        = 0
+Gst.State.NULL                = 1
+Gst.State.READY               = 2
+Gst.State.PAUSED              = 3
+Gst.State.PLAYING             = 4
+Gst.State.BUFFERING           = 5
 
 GObject.threads_init()
 
@@ -28,7 +28,7 @@ class GstPlayer(GObject.GObject):
 	self.mainGui = mainGui
 	self.playerGui = playerGui
         self.playing = False
-	self.status=Gst_STATE_READY
+	self.status=Gst.State.READY
 	self.file_tags = {}
         self.player = Gst.ElementFactory.make("playbin", "player")
         self.videowidget = self.playerGui.movie_window
@@ -126,16 +126,16 @@ class GstPlayer(GObject.GObject):
 	if math.floor(percent/5) > self._cbuffering:
 	    self._cbuffering = math.floor(percent/5)
 	    buffering = _('Buffering :')
-	    self.status = Gst_STATE_BUFFERING
+	    self.status = Gst.State.BUFFERING
 	    GObject.idle_add(self.playerGui.media_name_label.set_markup,'<small><b>%s</b> %s%s</small>' % (buffering,percent,'%'))
 
 	if percent == 100:
 	    self._cbuffering = -1
-	    if self.get_state() == Gst_STATE_PAUSED:
+	    if self.get_state() == Gst.State.PAUSED:
 		GObject.idle_add(self.mainGui.info_label.set_text,'')
 		self.playerGui.pause_resume()
-	elif self.status == Gst_STATE_BUFFERING:
-	    if not self.get_state() == Gst_STATE_PAUSED:
+	elif self.status == Gst.State.BUFFERING:
+	    if not self.get_state() == Gst.State.PAUSED:
 		self.playerGui.pause_resume()
     
     def on_temp_location(self, playbin, queue, prop):
@@ -174,7 +174,7 @@ class GstPlayer(GObject.GObject):
 
         res = self.player.send_event(event)
         if res:
-            Gst.info("setting new stream time to 0")
+            #Gst.info("setting new stream time to 0")
             self.player.set_new_stream_time(0L)
         else:
             Gst.error("seek to %r failed" % location)
@@ -251,18 +251,18 @@ class GstPlayer(GObject.GObject):
 		return
 
     def pause(self):
-        Gst.info("pausing player")
-        self.player.set_state(Gst.STATE_PAUSED)
+        #Gst.info("pausing player")
+        self.player.set_state(Gst.State.PAUSED)
         self.playing = False
 
     def play(self):
-        Gst.info("playing player")
-        self.player.set_state(Gst.STATE_PLAYING)
+        #Gst.info("playing player")
+        self.player.set_state(Gst.State.PLAYING)
         self.playing = True
         
     def stop(self):
-        self.player.set_state(Gst.STATE_NULL)
-        Gst.info("stopped player")
+        self.player.set_state(Gst.State.NULL)
+        #Gst.info("stopped player")
 	self.playing = False
         if self._temp_location:
             try:

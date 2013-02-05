@@ -32,16 +32,16 @@ class Youtube(object):
         self.qlist_checked=False
         self.elarrId=0
         ## the gui box to show custom filters/options
-        self.opt_box = self.gui.gladeGui.get_widget("search_options_box")
+        self.opt_box = self.gui.gladeGui.get_object("search_options_box")
         ## options labels
         self.order_label = _("Order by: ")
         self.category_label = _("Category: ")
         self.filtersLabel = _("Filters: ")
         ## video quality combobox
-        self.youtube_quality_box = self.gui.gladeGui.get_widget("quality_box")
+        self.youtube_quality_box = self.gui.gladeGui.get_object("quality_box")
         
         self.youtube_quality_model = Gtk.ListStore(str)
-        self.youtube_video_rate = Gtk.ComboBox(self.youtube_quality_model)
+        self.youtube_video_rate = Gtk.ComboBox.new_with_model_and_entry(self.youtube_quality_model)
         cell = Gtk.CellRendererText()
         self.youtube_video_rate.pack_start(cell, True)
         self.youtube_video_rate.add_attribute(cell, 'text', 0)
@@ -53,11 +53,11 @@ class Youtube(object):
         self.youtube_video_rate.connect('changed', self.on_youtube_video_rate_changed)
 
         ## youtube video quality choices
-        self.res320 = self.gui.gladeGui.get_widget("res1")
-        self.res640 = self.gui.gladeGui.get_widget("res2")
-        self.res854 = self.gui.gladeGui.get_widget("res3")
-        self.res1280 = self.gui.gladeGui.get_widget("res4")
-        self.res1920 = self.gui.gladeGui.get_widget("res5")
+        self.res320 = self.gui.gladeGui.get_object("res1")
+        self.res640 = self.gui.gladeGui.get_object("res2")
+        self.res854 = self.gui.gladeGui.get_object("res3")
+        self.res1280 = self.gui.gladeGui.get_object("res4")
+        self.res1920 = self.gui.gladeGui.get_object("res5")
 
         ## SIGNALS
         dic = {

@@ -209,7 +209,7 @@ class ComboBox(object):
             name = self.model.get_value(iter, 0)
             if name == usr_search:
                 found = 1
-                GObject.idle_add(self.select,path[0])
+                GObject.idle_add(self.select,path)
                 break
             GObject.idle_add(self.combobox.set_active,-1)
             
@@ -227,7 +227,7 @@ class ComboBox(object):
 def decode_htmlentities(text):
     p = htmllib.HTMLParser(None)
     p.save_bgn()
-    p.feed(text)
+    #p.feed(text)
     try:
         text = p.save_end().decode('utf-8')
     except:
